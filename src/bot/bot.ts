@@ -7,7 +7,7 @@ const MY_ID = BigInt(process.env.MY_ID || "0"); // Use BigInt for DB consistency
 
 if (!token) throw new Error("TELEGRAM_BOT_TOKEN missing");
 
-const bot = new Bot(token);
+export const bot = new Bot(token);
 
 bot.use(async (ctx, next) => {
   if (ctx.from?.id !== Number(MY_ID)) {
@@ -27,5 +27,3 @@ bot.use(incomeModule);
 bot.use(logModule);
 
 bot.command("start", (ctx) => ctx.reply("System Online, Sir."));
-
-export default bot;
