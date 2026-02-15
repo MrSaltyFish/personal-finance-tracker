@@ -1,4 +1,4 @@
-import { Bot, webhookCallback } from "grammy";
+import { Bot, webhookCallback, InlineKeyboard } from "grammy";
 import { db } from "../db";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -17,8 +17,19 @@ bot.use(async (ctx, next) => {
   await next();
 });
 
+bot.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  console.log(`CockroachDB Response time: ${ms}ms`);
+});
+
 
 bot.command("start", (ctx) => ctx.reply("System Online, Sir."));
-bot.on("message", (ctx) => ctx.reply(`Logged: ${ctx.message.text}`));
+bot.command("log", async (ctx) => {
+  const keyboard = new InlineKeyboard().text("Edit Category", "edit_cat").text("Delete", "del_tx");
+  await ctx.reply(`Logged ₹${ctx.match}. Choose action:`, { reply_markup: keyboard });
+});
+// bot.on("message", (ctx) => ctx.reply(`Logged: ${ctx.message.text}`));
 
 export default bot;
