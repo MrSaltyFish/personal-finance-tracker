@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
   
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema=src/db/schema.prisma",
     "db:push": "prisma db push",
     "db:studio": "prisma studio"
   
