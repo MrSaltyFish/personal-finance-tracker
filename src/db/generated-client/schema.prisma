@@ -1,0 +1,37 @@
+// src/db/schema.prisma
+generator client {
+  provider   = "prisma-client-js"
+  output     = "./generated-client"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "cockroachdb"
+}
+
+// src/db/schema.prisma
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  INVESTMENT
+  TRANSFER
+}
+
+model Transaction {
+  // Use a String ID with cuid for better distributed performance
+  id          String          @id @default(cuid())
+  userId      BigInt // Telegram ID
+  amount      Decimal
+  type        TransactionType @default(EXPENSE)
+  category    String // e.g., "FOOD", "STIPEND", "RENT"
+  description String?
+
+  // Track recurring items (those 4-month expenses you mentioned)
+  isRecurring Boolean @default(false)
+
+  date      DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId]) // Indexing for faster lookups when the bot grows
+}

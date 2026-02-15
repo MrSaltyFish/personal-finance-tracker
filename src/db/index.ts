@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./generated-client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient | undefined };
 
@@ -13,7 +13,3 @@ export const getDb = () => {
   if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = client;
   return client;
 };
-
-// For backward compatibility in your other files, 
-// but this might still trigger the build error if not careful.
-// Let's try to keep it purely functional.
