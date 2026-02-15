@@ -1,18 +1,17 @@
-import { Bot, webhookCallback, InlineKeyboard } from "grammy";
-import { db } from "../db";
+import { Bot } from "grammy";
+import { incomeModule } from "./commands/income";
+import { logModule } from "./commands/log";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const MY_ID = Number(process.env.MY_ID);
+const MY_ID = BigInt(process.env.MY_ID || "0"); // Use BigInt for DB consistency
 
 if (!token) throw new Error("TELEGRAM_BOT_TOKEN missing");
 
 const bot = new Bot(token);
 
 bot.use(async (ctx, next) => {
-  console.log("Incoming User ID:", ctx.from?.id);
-  if (ctx.from?.id !== MY_ID) {
-    console.warn(`Unauthorized access by ID: ${ctx.from?.id}`);
-    return ctx.reply("Permission Denied: Unauthorized User.");
+  if (ctx.from?.id !== Number(MY_ID)) {
+    return ctx.reply("Permission Denied.");
   }
   await next();
 });
@@ -24,12 +23,9 @@ bot.use(async (ctx, next) => {
   console.log(`CockroachDB Response time: ${ms}ms`);
 });
 
+bot.use(incomeModule);
+bot.use(logModule);
 
 bot.command("start", (ctx) => ctx.reply("System Online, Sir."));
-bot.command("log", async (ctx) => {
-  const keyboard = new InlineKeyboard().text("Edit Category", "edit_cat").text("Delete", "del_tx");
-  await ctx.reply(`Logged ₹${ctx.match}. Choose action:`, { reply_markup: keyboard });
-});
-// bot.on("message", (ctx) => ctx.reply(`Logged: ${ctx.message.text}`));
 
 export default bot;
